@@ -4,9 +4,9 @@ require 'gosu'
 
 class Player
   attr_reader :score
-  def initialize
-    @image = Gosu::Image.new("arquivos/nave.png")
-    @beep = Gosu::Sample.new("arquivos/beep.wav")
+  def initialize(nave, boom)
+    @image = Gosu::Image.new("arquivos/#{nave}")
+    @boom = Gosu::Sample.new("arquivos/#{boom}")
     @x = @y = @vel_x = @vel_y = @angle = 0.0
     @score = 0
   end
@@ -15,20 +15,20 @@ class Player
     @x, @y = x, y
   end
 
-  def turn_left
+  def pra_esquerda
     @angle -= 4.5
   end
 
-  def turn_right
+  def pra_direita
     @angle += 4.5
   end
 
-  def accelerate
+  def acelerador
     @vel_x += Gosu.offset_x(@angle, 0.5)
     @vel_y += Gosu.offset_y(@angle, 0.5)
   end
 
-  def move
+  def mover
     @x += @vel_x
     @y += @vel_y
     @x %= 800
@@ -48,8 +48,8 @@ class Player
   def collect_stars(stars)
     stars.reject! do |star|
       if Gosu.distance(@x, @y, star.x, star.y) < 35
-        @score += 10
-        @beep.play
+        @score += 1
+        @boom.play
         true
       else
         false
@@ -61,28 +61,53 @@ end
 class Tutorial < Gosu::Window
   def initialize
     super 800, 600
-    self.caption = "Crazy Spaceship Game"
+    self.caption = "Invasores da Terra"
 
-    @background_image = Gosu::Image.new("arquivos/terra.png", :tileable => true)
+    @background_image = Gosu::Image.new("arquivos/space.jpg", :tileable => true)
+    #@music = Gosu::Sample.new("arquivos/boom.wav")
+    #@music.play
 
-    @player = Player.new
-    @player.warp(400, 300)
+
+    @player = Player.new("nave3.png", "boom.wav")
+    @player.warp(300, 300)
+
+
+    @player2 = Player.new("nave2.png", "boom2.wav")
+    @player2.warp(500, 300)
+
+
     @star_anim = Gosu::Image.load_tiles("arquivos/star.png", 32, 32)
     @stars = Array.new
     @font = Gosu::Font.new(20)
+    @font2 = Gosu::Font.new(20)
   end
 
   def update
+    if Gosu.button_down? Gosu::KB_A or Gosu::button_down? Gosu::GP_LEFT
+      @player2.pra_esquerda
+    end
+    if Gosu.button_down? Gosu::KB_D or Gosu::button_down? Gosu::GP_LEFT
+      @player2.pra_direita
+    end
+    if Gosu.button_down? Gosu::KB_W or Gosu::button_down? Gosu::GP_LEFT
+      @player2.acelerador
+    end
+    @player2.mover
+    @player2.collect_stars(@stars)
+
+
+
+
     if Gosu.button_down? Gosu::KB_LEFT or Gosu::button_down? Gosu::GP_LEFT
-      @player.turn_left
+      @player.pra_esquerda
     end
     if Gosu.button_down? Gosu::KB_RIGHT or Gosu::button_down? Gosu::GP_RIGHT
-      @player.turn_right
+      @player.pra_direita
     end
     if Gosu.button_down? Gosu::KB_UP or Gosu::button_down? Gosu::GP_BUTTON_0
-      @player.accelerate
+      @player.acelerador
     end
-    @player.move
+    @player.mover
     @player.collect_stars(@stars)
 
     if rand(100) < 4 and @stars.size < 25
@@ -93,8 +118,10 @@ class Tutorial < Gosu::Window
   def draw
     @background_image.draw(0, 0, ZOrder::BACKGROUND)
     @player.draw
+    @player2.draw
     @stars.each { |star| star.draw }
-    @font.draw("Score: #{@player.score}", 10, 10, ZOrder::UI, 1.0, 1.0, Gosu::Color::YELLOW)
+    @font.draw("Inimigos derrotados: #{@player.score}", 10, 10, ZOrder::UI, 1.0, 1.0, Gosu::Color::GREEN)
+    @font2.draw("Inimigos derrotados: #{@player2.score}", 800-250, 10, ZOrder::UI, 1.0, 1.0, Gosu::Color::YELLOW)
   end
 
   def button_down(id)
