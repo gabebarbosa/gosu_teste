@@ -1,5 +1,5 @@
+require 'rubygems'
 require 'gosu'
-
 
 
 class Player
@@ -63,7 +63,7 @@ class Tutorial < Gosu::Window
     super 800, 600
     self.caption = "Invasores da Terra"
 
-    @background_image = Gosu::Image.new("arquivos/space.jpg", :tileable => true)
+    @background_image = Gosu::Image.new("arquivos/terra.jpg", :tileable => true)
     #@music = Gosu::Sample.new("arquivos/boom.wav")
     #@music.play
 
@@ -148,8 +148,10 @@ class Star
 
   def draw  
     img = @animation[Gosu.milliseconds / 100 % @animation.size]
+    #img.draw(@x - img.width / 2.0, @y - img.height / 2.0,
+    #   ZOrder::STARS, 1, 1, @color, :add)
     img.draw(@x - img.width / 2.0, @y - img.height / 2.0,
-        ZOrder::STARS, 1, 1, @color, :add)
+        ZOrder::STARS, 1, 1, @color)
   end
 end
 
