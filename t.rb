@@ -5,8 +5,8 @@ require 'gosu'
 class Player
   attr_reader :score
   def initialize
-    @image = Gosu::Image.new("arquivos/nave.png")
-    @beep = Gosu::Sample.new("arquivos/beep.wav")
+    @image = Gosu::Image.new("media/taxi.png")
+    @beep = Gosu::Sample.new("media/beep.wav")
     @x = @y = @vel_x = @vel_y = @angle = 0.0
     @score = 0
   end
@@ -31,8 +31,8 @@ class Player
   def move
     @x += @vel_x
     @y += @vel_y
-    @x %= 800
-    @y %= 600
+    @x %= 640
+    @y %= 480
 
     @vel_x *= 0.95
     @vel_y *= 0.95
@@ -60,14 +60,14 @@ end
 
 class Tutorial < Gosu::Window
   def initialize
-    super 800, 600
+    super 640, 480
     self.caption = "Crazy Spaceship Game"
 
-    @background_image = Gosu::Image.new("arquivos/terra.png", :tileable => true)
+    @background_image = Gosu::Image.new("media/space.png", :tileable => true)
 
     @player = Player.new
-    @player.warp(400, 300)
-    @star_anim = Gosu::Image.load_tiles("arquivos/star.png", 32, 32)
+    @player.warp(320, 240)
+    @star_anim = Gosu::Image.load_tiles("media/star.png", 32, 32)
     @stars = Array.new
     @font = Gosu::Font.new(20)
   end
@@ -115,8 +115,8 @@ class Star
     @color.red = rand(256 - 40) + 40
     @color.green = rand(256 - 40) + 40
     @color.blue = rand(256 - 40) + 40
-    @x = rand * 800
-    @y = rand * 600
+    @x = rand * 640
+    @y = rand * 480
   end
 
   def draw  
